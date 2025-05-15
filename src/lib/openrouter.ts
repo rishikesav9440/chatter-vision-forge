@@ -1,4 +1,3 @@
-
 import { Message, MessageContent, OpenRouterModel, OpenRouterRequestBody } from "@/types";
 import { toast } from "sonner";
 
@@ -54,7 +53,10 @@ export async function sendMessageToOpenRouter(
     }));
 
     // Add system message if needed
-    const systemMessage = {
+    const systemMessage: {
+      role: "system";
+      content: string;
+    } = {
       role: "system",
       content: "You are a helpful assistant that can also analyze images."
     };

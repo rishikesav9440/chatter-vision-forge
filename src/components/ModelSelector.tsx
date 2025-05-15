@@ -6,7 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { OPENROUTER_MODELS, OpenRouterModel } from "@/lib/openrouter";
+import { OPENROUTER_MODELS } from "@/lib/openrouter";
+import { OpenRouterModel } from "@/types";
 import { ChevronDown } from "lucide-react";
 
 interface ModelSelectorProps {
