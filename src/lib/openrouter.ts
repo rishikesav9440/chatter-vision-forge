@@ -1,4 +1,3 @@
-
 import { Message, MessageContent, OpenRouterModel, OpenRouterRequestBody } from "@/types";
 import { toast } from "sonner";
 
@@ -34,10 +33,24 @@ export async function sendMessageToOpenRouter(
     }
 
     // Map our internal messages to OpenRouter format
-    const formattedMessages = messages.map((message) => ({
-      role: message.role,
-      content: message.content
-    }));
+    const formattedMessages = messages.map((message) => {
+      // Convert content array to a single string for API consumption
+      let formattedContent = "";
+      
+      message.content.forEach(content => {
+        if (content.type === "text") {
+          formattedContent += content.text + " ";
+        } else if (content.type === "image_url") {
+          // This will be used for base64 images if any still exist
+          formattedContent += `[Image shown in the chat] `;
+        }
+      });
+      
+      return {
+        role: message.role,
+        content: formattedContent.trim()
+      };
+    });
 
     // Add system message if needed
     const systemMessage = {
@@ -90,20 +103,21 @@ export async function sendMessageToOpenRouter(
   }
 }
 
-export function formatImageToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-      } else {
-        reject(new Error("Failed to convert image to base64"));
-      }
-    };
-    reader.onerror = reject;
-  });
-}
+// No longer needed as we're using ImageKit instead
+// export function formatImageToBase64(file: File): Promise<string> {
+//   return new Promise((resolve, reject) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => {
+//       if (typeof reader.result === "string") {
+//         resolve(reader.result);
+//       } else {
+//         reject(new Error("Failed to convert image to base64"));
+//       }
+//     };
+//     reader.onerror = reject;
+//   });
+// }
 
 // Function to save API key to localStorage
 export function saveApiKey(key: string): void {

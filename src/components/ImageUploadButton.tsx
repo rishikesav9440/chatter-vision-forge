@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { MessageContent } from "@/types";
-import { formatImageToBase64 } from "@/lib/openrouter";
+import { uploadImageToImageKit } from "@/lib/imagekit";
 import { toast } from "sonner";
 import { ChangeEvent, useRef } from "react";
 import { Image } from "lucide-react";
@@ -35,14 +35,23 @@ export function ImageUploadButton({ onImageUpload, disabled = false }: ImageUplo
     }
 
     try {
-      const base64Image = await formatImageToBase64(file);
+      toast.loading("Uploading image...");
       
-      onImageUpload({
-        type: "image_url",
-        image_url: {
-          url: base64Image
-        }
-      });
+      // Upload to ImageKit
+      const imageUrl = await uploadImageToImageKit(file);
+      
+      if (imageUrl) {
+        toast.dismiss();
+        toast.success("Image uploaded successfully");
+        
+        // Pass image URL as text content rather than base64 data
+        onImageUpload({
+          type: "text",
+          text: `[Image: ${imageUrl}]`
+        });
+      } else {
+        toast.error("Failed to upload image");
+      }
     } catch (error) {
       console.error("Error processing image:", error);
       toast.error("Failed to process image");
