@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Message, OpenRouterModel, MessageContent } from "@/types";
-import { DEFAULT_MODEL, sendMessageToOpenRouter } from "@/lib/openrouter";
+import { DEFAULT_MODEL, sendMessageToOpenRouter, saveApiKey } from "@/lib/openrouter";
 import { Header } from "@/components/Header";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
@@ -17,17 +17,33 @@ const Index = () => {
   const [showApiKeyForm, setShowApiKeyForm] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Check for previously stored API key
+  useEffect(() => {
+    const storedApiKey = localStorage.getItem("OPENROUTER_API_KEY");
+    if (storedApiKey) {
+      setApiKey(storedApiKey);
+      setShowApiKeyForm(false);
+      // Add welcome message
+      setMessages([
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: [{
+            type: "text",
+            text: "Hello! I'm your AI assistant powered by OpenRouter. I can help answer questions and analyze images. How may I assist you today?"
+          }],
+          createdAt: new Date()
+        }
+      ]);
+    }
+  }, []);
+
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = async (content: MessageContent[]) => {
-    if (!apiKey && showApiKeyForm) {
-      toast.error("Please enter your OpenRouter API key first");
-      return;
-    }
-
     if (content.length === 0) return;
 
     const newMessage: Message = {
@@ -41,9 +57,6 @@ const Index = () => {
     setIsLoading(true);
 
     try {
-      // Update the API key in the openrouter.ts file (in a real app, this would be done differently)
-      // For this demo, we're using the entered API key directly in the component
-
       const response = await sendMessageToOpenRouter(
         [...messages, newMessage], 
         selectedModel
@@ -69,8 +82,8 @@ const Index = () => {
       return;
     }
     
-    // In a real app, you might want to validate the API key
-    toast.success("API key saved");
+    // Save API key
+    saveApiKey(apiKey);
     setShowApiKeyForm(false);
     
     // Add welcome message

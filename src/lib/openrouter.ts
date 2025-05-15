@@ -1,3 +1,4 @@
+
 import { Message, MessageContent, OpenRouterModel, OpenRouterRequestBody } from "@/types";
 import { toast } from "sonner";
 
@@ -11,14 +12,24 @@ export const OPENROUTER_MODELS: OpenRouterModel[] = [
 
 export const DEFAULT_MODEL = OPENROUTER_MODELS[0];
 
-const OPENROUTER_API_KEY = ""; // Replace with your API key
+// Get API key from environment variable
+const getApiKey = () => {
+  // Check for API key from localStorage first (for use in browser)
+  const storedApiKey = localStorage.getItem("OPENROUTER_API_KEY");
+  if (storedApiKey) return storedApiKey;
+  
+  return ""; // Return empty if no API key is found
+};
 
 export async function sendMessageToOpenRouter(
   messages: Message[],
   model: OpenRouterModel
 ): Promise<Message> {
   try {
-    if (!OPENROUTER_API_KEY) {
+    // Get the API key
+    const apiKey = getApiKey();
+    
+    if (!apiKey) {
       throw new Error("OpenRouter API key is missing");
     }
 
@@ -29,11 +40,8 @@ export async function sendMessageToOpenRouter(
     }));
 
     // Add system message if needed
-    const systemMessage: {
-      role: "system";
-      content: string;
-    } = {
-      role: "system",
+    const systemMessage = {
+      role: "system" as const,
       content: "You are a helpful assistant that can also analyze images."
     };
 
@@ -46,7 +54,7 @@ export async function sendMessageToOpenRouter(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "Authorization": `Bearer ${apiKey}`,
         "HTTP-Referer": window.location.origin,
         "X-Title": "OpenRouter Chat App"
       },
@@ -95,4 +103,12 @@ export function formatImageToBase64(file: File): Promise<string> {
     };
     reader.onerror = reject;
   });
+}
+
+// Function to save API key to localStorage
+export function saveApiKey(key: string): void {
+  if (key && key.trim() !== "") {
+    localStorage.setItem("OPENROUTER_API_KEY", key);
+    toast.success("API key saved");
+  }
 }
