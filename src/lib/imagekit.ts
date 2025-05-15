@@ -3,11 +3,10 @@ import ImageKit from "imagekit";
 import { toast } from "sonner";
 
 // Initialize ImageKit with your credentials
-// These should be stored in environment variables in production
 const imagekit = new ImageKit({
-  publicKey: "your_public_key", // Replace with your public key
-  privateKey: "your_private_key", // Replace with your private key
-  urlEndpoint: "https://ik.imagekit.io/your_imagekit_id" // Replace with your URL endpoint
+  publicKey: "public_JITJrCsVKZfgISsvIkHWeGfjL2s=",
+  privateKey: "private_mJCZ81AsFb5hKmcxJBbcV2v4GKE=", 
+  urlEndpoint: "https://ik.imagekit.io/8y7oyfmge/"
 });
 
 export async function uploadImageToImageKit(file: File): Promise<string | null> {
