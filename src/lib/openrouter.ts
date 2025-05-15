@@ -1,35 +1,11 @@
 import { Message, MessageContent, OpenRouterModel, OpenRouterRequestBody } from "@/types";
 import { toast } from "sonner";
 
-// Most popular models
+// Only include the requested model
 export const OPENROUTER_MODELS: OpenRouterModel[] = [
   {
-    id: "anthropic/claude-3-5-sonnet",
-    name: "Claude 3.5 Sonnet"
-  },
-  {
-    id: "openai/gpt-4o",
-    name: "GPT-4o"
-  },
-  {
-    id: "anthropic/claude-3-opus",
-    name: "Claude 3 Opus"
-  },
-  {
-    id: "anthropic/claude-3-sonnet",
-    name: "Claude 3 Sonnet"
-  },
-  {
-    id: "anthropic/claude-3-haiku",
-    name: "Claude 3 Haiku"
-  },
-  {
-    id: "google/gemini-1.5-pro",
-    name: "Gemini 1.5 Pro"
-  },
-  {
-    id: "mistralai/mistral-large",
-    name: "Mistral Large"
+    id: "google/gemma-3-1b-it:free",
+    name: "Gemma 1B"
   }
 ];
 
